@@ -173,4 +173,8 @@ public class User {
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
 	}
+
+	public static void main(String[] args) {
+
+	}
 }
