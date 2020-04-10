@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:mvc="http://www.springframework.org/schema/mvc"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+        <!-- 扫描带有注解的类并实例化 -->
+        <context:component-scan base-package="cn.smbms.controller"/>
+        <!--开启mvc注解形式  -->
+        <mvc:annotation-driven/>
+        
+        <!--引入静态资源文件  -->
+		<mvc:resources location="/statics/" mapping="/statics/**"></mvc:resources>
+        
+        <!-- 配置interceptors -->
+		<mvc:interceptors>
+			<mvc:interceptor>
+				<mvc:mapping path="/sys/**"/>
+				<bean class="cn.smbms.interceptor.SysInterceptor"/>
+			</mvc:interceptor>
+		</mvc:interceptors>
+		
+        <!--完成视图对应(视图解析器) :  将逻辑视图名(字符串)渲染成真正的视图  -->
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        	<property name="prefix" value="/WEB-INF/jsp/"/>
+        	<property name="suffix" value=".jsp"/>
+        </bean>
+</beans>

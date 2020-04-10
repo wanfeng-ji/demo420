@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	 http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd ">
+	        
+    <context:component-scan base-package="cn.smbms.service"/> 
+    <context:component-scan base-package="cn.smbms.dao"/>  
+    
+    <!-- 读取数据库配置文件 -->
+    <context:property-placeholder location="classpath:database.properties"/>
+    
+    <!-- JNDI获取数据源(使用dbcp连接池) -->
+	<!-- JNDI获取数据源(使用dbcp连接池) -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${user}" />
+		<property name="password" value="${password}" />
+		<property name="initialSize" value="${initialSize}"/>
+		<property name="maxActive" value="${maxActive}"/>
+		<property name="maxIdle" value="${maxIdle}"/>
+		<property name="minIdle" value="${minIdle}"/>
+		<property name="maxWait" value="${maxWait}"/>
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"/>
+		<property name="removeAbandoned" value="${removeAbandoned}"/>
+		<!-- sql 心跳 -->
+		<property name= "testWhileIdle" value="true"/>
+		<property name= "testOnBorrow" value="false"/>
+		<property name= "testOnReturn" value="false"/>
+		<property name= "validationQuery" value="select 1"/>
+		<property name= "timeBetweenEvictionRunsMillis" value="60000"/>
+		<property name= "numTestsPerEvictionRun" value="${maxActive}"/>
+	</bean>
+	
+	<!--配置SqlSessionFactoryBean  -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!--引入数据源  -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 引入mybatis核心配置文件 -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<!--sql.xml映射文件  -->
+		
+	</bean>
+	
+	<!--在mybatis中,我们使用sqlsession 中的getMapper(T.class),根据指定的映射器(dao接口)和映射器文件(sql映射的xml文件)直接生成dao实现类 ,然后我们执行里面的方法就可以了 
+	  
+	  在spring-mybatis中,我们不必每次都调用getMapper()方法,而是 通过配置的方式直接为业务对象注入映射器实现
+	-->
+	
+	<!-- 配置dao,  以配置的形式找到映射器(dao接口)实现,然后创建dao对象-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 递归扫描这个包下面的  所有 接口并生成dao实现类,前提 : 这个接口必须得有它对应的sql .xml文件 -->
+		<!--<property name="basePackage" value="cn.smbms.dao"></property>-->
+		<property name="basePackage" value="cn.smbms.dao"/>
+	</bean>
+</beans>
